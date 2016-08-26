@@ -1,0 +1,114 @@
+<!-- design by yogesh paghdal https://in.linkedin.com/in/yogeshpaghdal  -->
+<html lang="en" ng-app="demoApp">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Demo</title>
+
+    <link rel="stylesheet" href="css/angular-material.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/md-data-table.css">
+ 
+</head>
+
+<body layout="column">
+
+    <md-toolbar class="md-whiteframe-1dp">
+        <div class="md-toolbar-tools">
+            <div class="md-title">Material Design Data Table</div>
+        </div>
+    </md-toolbar>
+
+    <md-content laout="column" flex ng-controller="nutritionController">
+
+        <md-card>
+            <div layout="row" layout-wrap class="checkboxes">
+                <md-checkbox ng-model="options.rowSelection">Row Selection</md-checkbox>
+                <md-checkbox ng-model="options.multiSelect">Multiple Selection</md-checkbox>
+                <md-checkbox ng-model="options.autoSelect">Auto Selection</md-checkbox>
+                <md-checkbox ng-model="options.decapitate">Decapitate</md-checkbox>
+                <md-checkbox ng-model="options.largeEditDialog">Lard Edit Dialogs</md-checkbox>
+                <md-checkbox ng-model="options.boundaryLinks">Pagination Boundary Links</md-checkbox>
+                <md-checkbox ng-model="options.limitSelect" ng-click="toggleLimitOptions()">Pagination Limit Select</md-checkbox>
+                <md-checkbox ng-model="options.pageSelect">Pagination Page Select</md-checkbox>
+            </div>
+        </md-card>
+
+        <md-card>
+
+            <md-toolbar class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
+                <div class="md-toolbar-tools">
+                    <span>Nutrition</span>
+                    <div flex></div>
+                    <md-button class="md-icon-button" ng-click="loadStuff()">
+                        <md-icon>refresh</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+
+            <md-toolbar class="md-table-toolbar alternate" ng-show="options.rowSelection && selected.length">
+                <div class="md-toolbar-tools">
+                    <span>{{selected.length}} {{selected.length > 1 ? 'items' : 'item'}} selected</span>
+                </div>
+            </md-toolbar>
+
+            <md-table-container>
+                <table resize md-table md-row-select="options.rowSelection" multiple="{{options.multiSelect}}" ng-model="selected" md-progress="promise">
+                    <thead id="tablewidth" ng-if="!options.decapitate" md-head md-order="query.order" md-on-reorder="logOrder">
+                        <tr  md-row>
+							<th class="plusbuttonicon thaa0" data-title="Name" md-cell>#</th>                          
+							<th class="Present thaa1" md-column md-order-by="name"><span>Dessert (100g serving)</span></th>
+                            <th class="Present thaa2" md-column md-order-by="type"><span>Type</span></th>
+                            <th class="Present thaa3" md-column md-numeric md-order-by="calories.value" md-desc><span>Calories</span></th>
+                            <th class="Present thaa4" md-column md-numeric md-order-by="fat.value"><span>Fat (g)</span></th>
+                            <th class="Present thaa5" md-column md-numeric md-order-by="carbs.value"><span>Carbs (g)</span></th>
+                            <th class="Present thaa6" md-column md-numeric md-order-by="protein.value"><span>Protein (g)</span></th>
+                            <th class="Present thaa7" md-column md-numeric md-order-by="sodium.value"><span>Sodium (mg)</span></th>
+                            <th class="Present thaa8" md-column md-numeric md-order-by="calcium.value"><span>Calcium (%)</span></th>
+                            <th class="Present thaa9" md-column md-numeric md-order-by="iron.value"><span>Iron (%)</span></th>
+                        </tr>
+                    </thead>
+                    <tbody md-body>
+                          <tr  class="primary trid{{dessert.id}}" md-row md-select="dessert" md-on-select="logItem" md-auto-select="options.autoSelect" ng-disabled="dessert.calories.value > 400" ng-repeat-start="dessert in desserts.data | filter: filter.search | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit">
+							<td class="plusbuttonicon" md-cell>
+ 
+								 <md-button  id="{{dessert.id}}" ng-click="movedata();"  class="md-icon-button downarrow-{{dessert.id}} downarrow">
+									 <i id="downarrow" class="material-icons">&#xE313;</i>
+								</md-button>
+								 <md-button id="{{dessert.id}}"  ng-click="movedata();"  class="md-icon-button uparrow-{{dessert.id}} uparrow">
+									 <i id="uparrow" class="material-icons">&#xE316;</i>
+								</md-button>
+							</td>
+							<td class="thaa1" data-title="Name" md-cell>{{dessert.name}}</td>
+                            <td class="thaa2" data-title="Type" md-cell>
+                                <md-select ng-model="dessert.type" placeholder="Other">
+                                    <md-option ng-value="type" ng-repeat="type in getTypes()">{{type}}</md-option>
+                                </md-select>
+                            </td>
+                            <td class="thaa3" data-title="Calories" md-cell>{{dessert.calories.value}}</td>
+                            <td class="thaa4" data-title="Fat" md-cell>{{dessert.fat.value | number: 2}}</td>
+                            <td class="thaa5" data-title="Carbs" md-cell>{{dessert.carbs.value}}</td>
+                            <td class="thaa6" data-title="Protein" md-cell>{{dessert.protein.value | number: 2}}</td>
+                            <td class="thaa7" data-title="Sodium" md-cell>{{dessert.sodium.value}}</td>
+                            <td class="thaa8" data-title="Calcium" md-cell>{{dessert.calcium.value}}%</td>
+                            <td class="thaa9" data-title="Iron" md-cell>{{dessert.iron.value}}%</td>
+                        </tr>
+                        <tr class="secondary childid{{dessert.id}}" ng-repeat-end></tr>  
+                    </tbody>
+                </table>
+            </md-table-container>
+            <md-table-pagination md-limit="query.limit" md-limit-options="limitOptions" md-page="query.page" md-total="{{desserts.count}}" md-page-select="options.pageSelect" md-boundary-links="options.boundaryLinks" md-on-paginate="logPagination"></md-table-pagination>
+        </md-card>
+    </md-content>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+    <script src="js/md-data-table.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
